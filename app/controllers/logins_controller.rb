@@ -10,7 +10,7 @@ class LoginsController < ApplicationController
       reset_session
       session[:user] = user.id
 
-      redirect_to @login.original_url || root_url
+      redirect_to sanitize_url(@login.original_url) || root_url
     else
       @login.errors[:base] << "Please enter a correct username and password."
 
@@ -45,5 +45,11 @@ class LoginsController < ApplicationController
       httponly: true,
       secure:   true,
     }
+  end
+
+  def sanitize_url(url)
+    URI.parse(url).host == request.host ? url : nil
+  rescue
+    nil
   end
 end
