@@ -3,7 +3,10 @@ class Login
   attr_accessor :email, :password, :original_name
 
   def authenticate
+    user = User.find_by(email: email)
+    return if user.nil?
+
     digest = Digest::SHA1.hexdigest(@login.password)
-    User.find_by(email: email, password_digest: digest)
+    digest == user.password_digest ? user : nil
   end
 end
