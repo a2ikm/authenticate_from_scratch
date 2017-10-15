@@ -7,6 +7,7 @@ class LoginsController < ApplicationController
     @login = Login.new(login_params)
 
     if user = @login.authenticate
+      reset_session
       session[:user] = user.id
 
       redirect_to @login.original_url || root_url
