@@ -17,6 +17,6 @@ class Login
                                               DIGEST_ALGORITHM)
     password_digest = digest_bytes.unpack("H*").first
 
-    password_digest == user.password_digest ? user : nil
+    Rack::Utils.secure_compare(password_digest, user.password_digest) ? user : nil
   end
 end
