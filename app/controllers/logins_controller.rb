@@ -5,10 +5,8 @@ class LoginsController < ApplicationController
 
   def create
     @login = Login.new(login_params)
-    digest = Digest::SHA1.hexdigest(@login.password)
 
-    if (user = User.find_by(email: @login.email,
-                            password_digest: digest))
+    if user = @login.authenticate
       session[:user] = user.id
 
       redirect_to @login.original_url || root_url
