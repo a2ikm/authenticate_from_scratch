@@ -2,11 +2,21 @@ class Login
   include ActiveModel::Model
   attr_accessor :email, :password, :original_name
 
+  NITERATIONS = 20000
+  DIGEST_ALGORITHM =  OpenSSL::Digest::SHA512.new
+  KEY_LEN = DIGEST_ALGORITHM.length
+
   def authenticate
     user = User.find_by(email: email)
     return if user.nil?
 
-    digest = Digest::SHA1.hexdigest(@login.password)
-    digest == user.password_digest ? user : nil
+    digest_bytes = OpenSSL::PKCS5.pbkdf2_hmac(password,
+                                              user.password_salt,
+                                              NITERATIONS,
+                                              KEY_LEN,
+                                              DIGEST_ALGORITHM)
+    password_digest = digest_bytes.unpack("H*").first
+
+    password_digest == user.password_digest ? user : nil
   end
 end
